@@ -23,7 +23,7 @@ class CacheManagerG {
     
     func saveIntoCache(key: String,image: UIImage) {
         imageCaches.setObject(image, forKey: key as NSString)
-        print("Saving Image")
+       // print("Saving Image")
     }
     
     func getFromCach(key: String) -> UIImage? {

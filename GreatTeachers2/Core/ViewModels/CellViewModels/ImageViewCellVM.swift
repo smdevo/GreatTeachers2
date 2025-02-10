@@ -23,7 +23,7 @@ class ImageViewCellVM: ObservableObject {
     init(teacher: Teacher) {
         self.teacher = teacher
         if let cacheImage = cacheManager.getFromCach(key: "\(teacher.id)") {
-            print("Getting Image")
+           // print("Getting Image")
             image = cacheImage
         }else {
             gettingImage()

@@ -30,8 +30,8 @@ class HomeViewModel: ObservableObject {
     @Published var sortAscending: Bool = true
     
     
-    @Published var rating: Double = 2
-    @Published var newcomments: String = "O'z fikringizni bu yerga yozishingiz mumkun"
+    @Published var rating: Double = 0
+    @Published var newcomments: String = "Fikrlar"
     
     var cancellables = Set<AnyCancellable>()
     
@@ -104,21 +104,25 @@ class HomeViewModel: ObservableObject {
     func getCommentsOFTeacherById(id: String) {
         
         teacherComments = comments.filter { comment in
-            return id == comment.id
+            return id == comment.teacherId
         }
         
     }
     
-    //gettinf names for the comments
-    func getStudNameByID(id: String) -> String {
+    //getting Student By Id
+    func gettingStudById(id: String) -> Student? {
         
-        let students = students.filter { student in
-            
-            return student.id == id
+        var commentStudent: Student?
+        
+        students.forEach { student in
+            if student.id == id {
+                commentStudent = student
+            }
         }
-        print(students)
-        return students.first?.name ?? "Name 0"
+        
+        return commentStudent
     }
+    
     
     
     //Updating
@@ -141,19 +145,28 @@ class HomeViewModel: ObservableObject {
     
     //updating teacher
     
-    func updatingTeacher(teacher: Teacher, rating: Double) {
+    func updatingTeacher(teacher: Teacher, newrating: Double) {
         
-        var newTeacher = Teacher(id: teacher.id, name: teacher.name, surname: teacher.surname, universityName: teacher.universityName, major: teacher.major, rating: rating, username: teacher.username, password: teacher.password, image: teacher.image)
+        let addingRating = newrating / Double(students.count)
+        let totalRating = teacher.rating + addingRating
+        
+        //let newRating = (teacher.rating * teachers.count + rating) / (teachers.count + 1)
+        
+        let newTeacher = Teacher(id: teacher.id, name: teacher.name, surname: teacher.surname, universityName: teacher.universityName, major: teacher.major, rating: totalRating, username: teacher.username, password: teacher.password, image: teacher.image)
         
         AFHttp.shared.put(url: AFHttp.API_TEACHERS + newTeacher.id, isComments: false, params: AFHttp.paramsTeacher(teacher: newTeacher)) { (result: Result<Teacher,Error>) in
             switch result {
             case .success(let teacher):
                 print("Updated Teacher: \(teacher.name)")
+                self.rating = 0
+                self.newcomments = "Fikrlar"
                 self.dataManager.refreshBase()
             case .failure(let error):
                 print("Error teacher: \(error)")
             }
         }
+        
+        
         
     }
     

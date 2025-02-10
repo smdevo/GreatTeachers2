@@ -64,8 +64,8 @@ struct TeacherDetailView: View {
                     .font(.headline)
                 
                 
-               
-                    Text("Comments")
+                
+                Text("Comments")
                     .font(.title3)
                     .fontWeight(.bold)
                     .fontDesign(.serif)
@@ -73,22 +73,27 @@ struct TeacherDetailView: View {
                 
                 ScrollView {
                     
-                        if vm.teacherComments.isEmpty {
+                    if vm.teacherComments.isEmpty {
+                        
+                        VStack {
                             
-                            VStack {
-                                
-                                Text("Bo'sh")
-                                
-                                Text("Halicha komment yo'q")
-                                    .font(.subheadline)
-                            }
+                            Text("Bo'sh")
                             
-                        }else {
+                            Text("Halicha komment yo'q")
+                                .font(.subheadline)
+                        }
+                        
+                    }else {
+                        
+                        LazyVStack(alignment: .trailing) {
                             
-                            LazyVStack(alignment: .trailing) {
-                                
                             ForEach(vm.teacherComments) {comment in
-                                CommentCell(name: vm.getStudNameByID(id: comment.studentId), message: comment.message)
+                                
+                                if let student = vm.gettingStudById(id: comment.studentId) {
+                                    
+                                    CommentCell(profileImage: student.image, name: student.name, message: comment.message)
+                                    
+                                }
                             }
                             
                         }
@@ -100,7 +105,7 @@ struct TeacherDetailView: View {
                 .background(Color.gray.opacity(0.3))
                 .clipShape(
                     RoundedRectangle(cornerRadius: 10)
-                        
+                    
                 )
                 
                 
@@ -140,10 +145,10 @@ struct TeacherDetailView: View {
                             .font(.headline)
                         
                         TextEditor(text: $vm.newcomments)
-                                    .frame(height: 200)
-                                    .border(Color.gray, width: 1)
-                                    .background(Color.gray.opacity(0.3))
-                                    //.padding()
+                            .frame(height: 200)
+                            .border(Color.gray, width: 1)
+                            .background(Color.gray.opacity(0.3))
+                        //.padding()
                         
                         
                     }
@@ -152,9 +157,15 @@ struct TeacherDetailView: View {
                         Spacer()
                         
                         Button {
-//                            vm.creatingComment(idTeacher: teacher.id, idStudent: vm.currentStudent?.id ?? "1", message: vm.newcomments)
-//                            vm.updatingTeacher(teacher: teacher, rating: (teacher.rating * vm.teachers.count + vm.rating) / (vm.teachers.count + 1))
-                            dismiss()
+                            if vm.newcomments != "Fikrlar" {
+                                vm.creatingComment(idTeacher: teacher.id, idStudent: vm.currentStudent?.id ?? "1", message: vm.newcomments)
+                            }
+                            
+                            if vm.rating != 0 {
+                                vm.updatingTeacher(teacher: teacher, newrating: vm.rating)
+                            }
+                            print("Added")
+                             dismiss()
                         } label: {
                             Text("Yetkazish")
                                 .foregroundStyle(Color.white)
@@ -165,7 +176,7 @@ struct TeacherDetailView: View {
                                     RoundedRectangle(cornerRadius: 10)
                                 )
                         }
-                        .disabled(vm.rating == 0)
+                        .disabled(vm.rating == 0 && vm.newcomments == "Fikrlar")
                     }
                     
                     

@@ -37,11 +37,17 @@ struct CommentCell: View {
         
         HStack(spacing: 10) {
             
-            if let imageStr = profileImage {
+            if
+                let imageStr = profileImage,
+                let url = URL(string: imageStr)
+            {
+                
+                AsyncImage(url: url)
+                
                 
                 // Profile Image
-                Image(imageStr)
-                    .resizable()
+                //Image(imageStr)
+                    //.resizable()
                     .scaledToFill()
                     .frame(width: 50, height: 50)
                     .clipShape(Circle())
